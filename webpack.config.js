@@ -9,11 +9,15 @@ module.exports = {
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/
+      },
+      {
+        test: /\.(frag|glsl)$/,
+        type: 'asset/source'
       }
     ]
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js']
+    extensions: ['.tsx', '.ts', '.js', '.frag', '.glsl']
   },
   output: {
     filename: 'bundle.js',
