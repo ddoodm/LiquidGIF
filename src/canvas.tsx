@@ -8,6 +8,8 @@ export const Canvas: React.FC = () => {
     const canvas = canvasRef.current;
     const renderer = new Renderer(canvas);
 
+    renderer.updateSource('fofo.png');
+
     const render = () => {
       renderer.render();
       requestAnimationFrame(render);
