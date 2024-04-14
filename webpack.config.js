@@ -11,13 +11,13 @@ module.exports = {
         exclude: /node_modules/
       },
       {
-        test: /\.(frag|glsl)$/,
+        test: /\.(frag|vert)$/,
         type: 'asset/source'
       }
     ]
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js', '.frag', '.glsl']
+    extensions: ['.tsx', '.ts', '.js', '.frag', '.vert']
   },
   output: {
     filename: 'bundle.js',

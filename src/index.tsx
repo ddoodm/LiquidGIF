@@ -6,7 +6,7 @@ import { Canvas } from './canvas';
 const App = () => {
     return (
         <div>
-            <h1>Hello World from React and TypeScript!</h1>
+            <h1>LiquidGIF</h1>
             <Canvas />
         </div>
     );
