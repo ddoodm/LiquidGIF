@@ -18,5 +18,5 @@ export const Canvas: React.FC = () => {
 
   }, []);
 
-  return <canvas ref={canvasRef} width="640" height="480" />;
+  return <canvas ref={canvasRef} width="640" height="640" />;
 };
