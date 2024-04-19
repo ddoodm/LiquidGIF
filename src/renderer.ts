@@ -1,5 +1,6 @@
 import canvas_vert from './shaders/canvas.vert';
 import canvas_frag from './shaders/canvas.frag';
+import { Preconditions } from './preconditions';
 
 export class Renderer {
     private readonly gl: WebGLRenderingContext;
@@ -9,7 +10,7 @@ export class Renderer {
     private readonly positionLocation: number;
     private readonly uTimeLocation: WebGLUniformLocation;
     private readonly uSourceLocation: WebGLUniformLocation;
-    private readonly uResolutionLocation: WebGLUniformLocation;
+    // private readonly uResolutionLocation: WebGLUniformLocation;
     private readonly uSourceResolutionLocation: WebGLUniformLocation;
 
     private uTime: number = 0;
@@ -19,14 +20,9 @@ export class Renderer {
     constructor(
         private readonly canvas: HTMLCanvasElement,
     ) {
-        const gl = canvas?.getContext('webgl');
-    
-        if (gl === null) {
-          alert('Unable to initialize WebGL. Your browser or machine may not support it.');
-          throw new Error('No GL');
-        }
-        this.gl = gl;
-    
+        this.gl = Preconditions.checkExists(canvas?.getContext('webgl'), 'no webgl');
+        const { gl } = this;
+
         const vertices = new Float32Array([
           -1.0, -1.0,   // First triangle
            1.0, -1.0,
@@ -36,17 +32,17 @@ export class Renderer {
            1.0,  1.0
         ]);
       
-        this.vertexBuffer = gl.createBuffer();
+        this.vertexBuffer = Preconditions.checkExists(gl.createBuffer(), "can't create buffer");
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
     
-        this.program = createShaderProgram(gl, canvas_vert, canvas_frag);
+        this.program = Preconditions.checkExists(createShaderProgram(gl, canvas_vert, canvas_frag), "can't create shader program");
 
         this.positionLocation = gl.getAttribLocation(this.program, 'position');
-        this.uTimeLocation = gl.getUniformLocation(this.program, 'uTime');
-        this.uSourceLocation = gl.getUniformLocation(this.program, 'uSource');
-        this.uResolutionLocation = gl.getUniformLocation(this.program, 'uResolution');
-        this.uSourceResolutionLocation = gl.getUniformLocation(this.program, 'uSourceResolution');
+        this.uTimeLocation =  Preconditions.checkExists(gl.getUniformLocation(this.program, 'uTime'), 'uniform not found');
+        this.uSourceLocation = Preconditions.checkExists(gl.getUniformLocation(this.program, 'uSource'), 'uniform not found');
+        // this.uResolutionLocation = Preconditions.checkExists(gl.getUniformLocation(this.program, 'uResolution'), 'uniform not found');
+        this.uSourceResolutionLocation = Preconditions.checkExists(gl.getUniformLocation(this.program, 'uSourceResolution'), 'uniform not found');
 
         this.lastTime = performance.now();
     }
@@ -67,7 +63,7 @@ export class Renderer {
         this.lastTime = currentTime;
         gl.uniform1f(uTimeLocation, this.uTime);
 
-        gl.uniform2f(this.uResolutionLocation, canvas.width, canvas.height);
+        // gl.uniform2f(this.uResolutionLocation, canvas.width, canvas.height);
 
         gl.activeTexture(gl.TEXTURE0);
         // gl.bindTexture(gl.TEXTURE_2D, this.source);
@@ -91,14 +87,12 @@ export class Renderer {
 }
 
 function compileShader(gl: WebGLRenderingContext, type: number, source: string) {
-    const shader = gl.createShader(type);
+    const shader = Preconditions.checkExists(gl.createShader(type), "can't create shader");
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
   
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-      console.error('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
-      gl.deleteShader(shader);
-      return null;
+      throw new Error('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
     }
   
     return shader;
@@ -107,7 +101,7 @@ function compileShader(gl: WebGLRenderingContext, type: number, source: string) 
   function createShaderProgram(gl: WebGLRenderingContext, vsSource: string, fsSource: string) {
     const vertexShader = compileShader(gl, gl.VERTEX_SHADER, vsSource);
     const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, fsSource);
-    const shaderProgram = gl.createProgram();
+    const shaderProgram = Preconditions.checkExists(gl.createProgram(), "can't create shader program");
   
     gl.attachShader(shaderProgram, vertexShader);
     gl.attachShader(shaderProgram, fragmentShader);
@@ -129,7 +123,7 @@ function compileShader(gl: WebGLRenderingContext, type: number, source: string) 
   
   function loadTexture(gl: WebGLRenderingContext, url: string): Promise<Texture> {
     return new Promise<Texture>(resolve => {
-      const texture = gl.createTexture();
+      const texture = Preconditions.checkExists(gl.createTexture(), "can't create texture");
       gl.bindTexture(gl.TEXTURE_2D, texture);
   
       // Because images have to be download over the internet

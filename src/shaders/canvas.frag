@@ -3,7 +3,7 @@ precision mediump float;
 varying vec2 vUv;
 
 uniform float uTime;
-uniform vec2 uResolution;
+// uniform vec2 uResolution;
 uniform vec2 uSourceResolution;
 
 uniform sampler2D uSource;

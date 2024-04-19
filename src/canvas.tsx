@@ -6,6 +6,10 @@ export const Canvas: React.FC = () => {
 
   React.useEffect(() => {
     const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
+
     const renderer = new Renderer(canvas);
 
     renderer.updateSource('fofo.png');
